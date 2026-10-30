@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.VezelDriveLauncher" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/vezel_accent</item>
+        <item name="colorPrimaryVariant">@color/vezel_header</item>
+        <item name="colorOnPrimary">@color/vezel_text</item>
+        <item name="android:statusBarColor">@color/vezel_bg</item>
+        <item name="android:navigationBarColor">@color/vezel_bg</item>
+        <item name="android:windowBackground">@color/vezel_bg</item>
+        <item name="android:textColorPrimary">@color/vezel_text</item>
+    </style>
+</resources>
