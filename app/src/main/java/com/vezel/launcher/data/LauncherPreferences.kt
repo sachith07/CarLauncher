@@ -55,20 +55,40 @@ class LauncherPreferences(context: Context) {
     val weatherCachedAtMs: Long
         get() = prefs.getLong(KEY_WX_AT, 0L)
 
+    val weatherHighC: Float?
+        get() = if (prefs.contains(KEY_WX_HIGH)) prefs.getFloat(KEY_WX_HIGH, 0f) else null
+
+    val weatherLowC: Float?
+        get() = if (prefs.contains(KEY_WX_LOW)) prefs.getFloat(KEY_WX_LOW, 0f) else null
+
+    val weatherSunset: String?
+        get() = prefs.getString(KEY_WX_SUNSET, null)
+
+    val weatherPlace: String?
+        get() = prefs.getString(KEY_WX_PLACE, null)
+
     fun cacheWeather(
         tempC: Float,
         summary: String,
         atMs: Long,
         lat: Double,
-        lon: Double
+        lon: Double,
+        highC: Float? = null,
+        lowC: Float? = null,
+        sunset: String? = null,
+        place: String? = null
     ) {
-        prefs.edit()
+        val editor = prefs.edit()
             .putFloat(KEY_WX_TEMP, tempC)
             .putString(KEY_WX_SUMMARY, summary)
             .putLong(KEY_WX_AT, atMs)
             .putString(KEY_WX_LAT, lat.toString())
             .putString(KEY_WX_LON, lon.toString())
-            .apply()
+        if (highC != null) editor.putFloat(KEY_WX_HIGH, highC) else editor.remove(KEY_WX_HIGH)
+        if (lowC != null) editor.putFloat(KEY_WX_LOW, lowC) else editor.remove(KEY_WX_LOW)
+        if (!sunset.isNullOrBlank()) editor.putString(KEY_WX_SUNSET, sunset) else editor.remove(KEY_WX_SUNSET)
+        if (!place.isNullOrBlank()) editor.putString(KEY_WX_PLACE, place) else editor.remove(KEY_WX_PLACE)
+        editor.apply()
     }
 
     fun clearWeatherCache() {
@@ -78,6 +98,10 @@ class LauncherPreferences(context: Context) {
             .remove(KEY_WX_AT)
             .remove(KEY_WX_LAT)
             .remove(KEY_WX_LON)
+            .remove(KEY_WX_HIGH)
+            .remove(KEY_WX_LOW)
+            .remove(KEY_WX_SUNSET)
+            .remove(KEY_WX_PLACE)
             .apply()
     }
 
@@ -95,8 +119,12 @@ class LauncherPreferences(context: Context) {
         private const val KEY_WX_AT = "wx_cached_at"
         private const val KEY_WX_LAT = "wx_lat"
         private const val KEY_WX_LON = "wx_lon"
+        private const val KEY_WX_HIGH = "wx_high_c"
+        private const val KEY_WX_LOW = "wx_low_c"
+        private const val KEY_WX_SUNSET = "wx_sunset"
+        private const val KEY_WX_PLACE = "wx_place"
 
-        const val DEFAULT_COLOR = "blue_gray"
+        const val DEFAULT_COLOR = "silver"
         const val DEFAULT_THEME = "dark"
         const val THEME_DARK = "dark"
         const val THEME_DAY = "day"

@@ -159,6 +159,35 @@ class AppDiscovery(private val context: Context) {
             Intent.ACTION_DIAL
         )
 
+    fun launchMusic() =
+        launchKnownOrFallback(
+            prefs.mediaPackage.ifBlank { null },
+            MediaSessionController.MEDIA_FALLBACKS
+        )
+
+    fun launchVideo() =
+        launchKnownOrFallback(null, VIDEO_PACKAGES)
+
+    fun launchConnectivity() {
+        val intents = listOf(
+            Intent(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS),
+            Intent(android.provider.Settings.ACTION_WIFI_SETTINGS),
+            Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS),
+            Intent(android.provider.Settings.ACTION_SETTINGS)
+        )
+        for (intent in intents) {
+            try {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                if (intent.resolveActivity(context.packageManager) != null) {
+                    context.startActivity(intent)
+                    return
+                }
+            } catch (_: Exception) {
+            }
+        }
+        Toast.makeText(context, R.string.no_app_found, Toast.LENGTH_SHORT).show()
+    }
+
     /** Opens Android's home-app picker / default apps settings when available. */
     fun openHomeAppSettings(): Boolean {
         val intents = listOf(
@@ -198,6 +227,14 @@ class AppDiscovery(private val context: Context) {
             "com.google.android.dialer",
             "com.android.contacts",
             "com.android.server.telecom"
+        )
+        val VIDEO_PACKAGES = listOf(
+            "com.google.android.youtube",
+            "com.android.gallery3d",
+            "com.mxtech.videoplayer.ad",
+            "com.mxtech.videoplayer.pro",
+            "org.videolan.vlc",
+            "com.android.chrome"
         )
     }
 }

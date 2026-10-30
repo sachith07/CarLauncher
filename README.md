@@ -2,7 +2,7 @@
 
 Native Kotlin + Android Views launcher APK for Honda Vezel / AC8227L-class head units.
 
-**Sprints 3–6:** live clock & GPS speed, media session attempt, configurable OEM packages, optional `homePilot` HOME flavor, weather cache, themes, acceptance docs.
+**Dashboard GUI:** mockup-aligned dark landscape home — greeting/clock/theme pill, SPEED · NOW PLAYING · WEATHER cards, silver vehicle hero with orange horizon, 8-item dock. Live clock, GPS, media, weather, OEM launches; `drawer` / `homePilot` flavors kept.
 
 | | |
 |---|---|
@@ -10,7 +10,7 @@ Native Kotlin + Android Views launcher APK for Honda Vezel / AC8227L-class head 
 | minSdk | 27 |
 | ABIs | `armeabi-v7a`, `arm64-v8a` |
 | UI target | 1280×720 landscape |
-| version | `0.6.0-sprints3-6` (versionCode 6) |
+| version | `0.7.0-dashboard-gui` (versionCode 7) |
 
 ## Build
 
@@ -68,6 +68,7 @@ adb uninstall com.vezel.launcher
 
 ## Docs
 
+- [Dashboard GUI mockup](docs/dashboard-gui-mockup.png)
 - [Acceptance checklist](docs/acceptance-checklist.md)
 - [HOME fallback](docs/home-fallback.md)
 - [Release signing](docs/release-signing.md)

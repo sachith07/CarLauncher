@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="vezel_bg">#0B1220</color>
-    <color name="vezel_surface">#152033</color>
-    <color name="vezel_header">#0F1A2B</color>
-    <color name="vezel_accent">#3D8BFF</color>
-    <color name="vezel_text">#E8EEF8</color>
-    <color name="vezel_text_muted">#8A9BB5</color>
-    <color name="vezel_dock">#101A2A</color>
-    <color name="vezel_tile">#1C2A40</color>
-    <color name="vezel_vehicle_slot">#2A3A52</color>
-    <color name="vezel_gauge_ring">#3D8BFF</color>
-    <color name="ic_launcher_bg">#0B1220</color>
+    <color name="vezel_bg">#121212</color>
+    <color name="vezel_surface">#1E1E1E</color>
+    <color name="vezel_header">#121212</color>
+    <color name="vezel_accent">#FF7A00</color>
+    <color name="vezel_accent_soft">#33FF7A00</color>
+    <color name="vezel_horizon">#66FF7A00</color>
+    <color name="vezel_text">#FFFFFF</color>
+    <color name="vezel_text_muted">#9A9A9A</color>
+    <color name="vezel_dock">#121212</color>
+    <color name="vezel_tile">#1E1E1E</color>
+    <color name="vezel_vehicle_slot">#00000000</color>
+    <color name="vezel_gauge_ring">#FF7A00</color>
+    <color name="vezel_gauge_track">#333333</color>
+    <color name="vezel_progress_track">#3A3A3A</color>
+    <color name="vezel_sun">#FFC107</color>
+    <color name="vezel_pill">#2A2A2A</color>
+    <color name="ic_launcher_bg">#121212</color>
 
     <!-- Day theme surfaces (FR-11) -->
     <color name="vezel_day_bg">#E8EEF4</color>
@@ -18,4 +24,6 @@
     <color name="vezel_day_dock">#CDD6E2</color>
     <color name="vezel_day_text">#122033</color>
     <color name="vezel_day_muted">#4A5B70</color>
+    <color name="vezel_day_tile">#FFFFFF</color>
+    <color name="vezel_day_pill">#D0D8E2</color>
 </resources>
