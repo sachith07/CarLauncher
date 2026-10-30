@@ -2,7 +2,7 @@
 
 Native Kotlin + Android Views launcher APK for Honda Vezel / AC8227L-class head units.
 
-**Sprint 2:** vehicle personalization — six paint WebP placeholders, SharedPreferences persistence, responsive dashboard stage. This app is **not** registered as the default HOME screen.
+**Sprints 3–6:** live clock & GPS speed, media session attempt, configurable OEM packages, optional `homePilot` HOME flavor, weather cache, themes, acceptance docs.
 
 | | |
 |---|---|
@@ -10,61 +10,76 @@ Native Kotlin + Android Views launcher APK for Honda Vezel / AC8227L-class head 
 | minSdk | 27 |
 | ABIs | `armeabi-v7a`, `arm64-v8a` |
 | UI target | 1280×720 landscape |
+| version | `0.6.0-sprints3-6` (versionCode 6) |
 
 ## Build
 
-Windows:
+Windows (default **drawer** flavor — not HOME):
 
 ```bat
-gradlew.bat :app:assembleDebug
+gradlew.bat :app:assembleDrawerDebug
 ```
 
-macOS / Linux:
-
-```bash
-./gradlew :app:assembleDebug
-```
-
-Debug APK: `app/build/outputs/apk/debug/app-debug.apk`
-
-Regenerate paint placeholders (optional):
+HOME-capable pilot (use only after recovery tests):
 
 ```bat
-python tools\generate_vezel_paint_placeholders.py
+gradlew.bat :app:assembleHomePilotDebug
 ```
+
+Release (debug keystore if `keystore.properties` is absent — see [docs/release-signing.md](docs/release-signing.md)):
+
+```bat
+gradlew.bat :app:assembleDrawerRelease
+```
+
+Debug APK example: `app/build/outputs/apk/drawer/debug/app-drawer-debug.apk`
 
 ## USB install
 
 ```bat
-adb install -r app\build\outputs\apk\debug\app-debug.apk
+adb install -r app\build\outputs\apk\drawer\debug\app-drawer-debug.apk
 ```
 
-Launch from the **app drawer**. Do not set as default home this milestone.
+Launch from the **app drawer** unless you intentionally installed `homePilot` and verified [docs/home-fallback.md](docs/home-fallback.md).
+
+## Permissions
+
+- `ACCESS_FINE_LOCATION` — GPS speed (m/s × 3.6) and weather location; denied → `--` / offline placeholders.
+- `INTERNET` — Open-Meteo HTTPS weather (cached; never blocks startup).
+- Notification listener (optional) — media session metadata; otherwise placeholder + deep-link to media package.
+
+## OEM apps & camera
+
+Settings → OEM apps: prefer factory radio / maps / phone / media packages. Dock uses those prefs, then known candidates, then a system picker/toast.
+
+**Reverse camera:** keep the stock MCU/firmware camera path intact. This launcher does not bind or replace the rear-camera surface. After camera exit, Android should resume the previous foreground activity — verify on device after warm wake.
 
 ## Vehicle paint
 
-Settings → six swatches. Choice is stored in SharedPreferences and restored on the dashboard after restart. Asset notes: [docs/vehicle-assets.md](docs/vehicle-assets.md).
+Settings → six swatches. Asset notes: [docs/vehicle-assets.md](docs/vehicle-assets.md).
 
 ## Rollback
 
-Uninstall the app:
+See [docs/home-fallback.md](docs/home-fallback.md). Uninstall:
 
 ```bat
 adb uninstall com.vezel.launcher
 ```
 
-Or use the device’s application settings. Because there is no `HOME` / `DEFAULT` intent filter, uninstall fully restores the previous launcher behavior.
+## Docs
+
+- [Acceptance checklist](docs/acceptance-checklist.md)
+- [HOME fallback](docs/home-fallback.md)
+- [Release signing](docs/release-signing.md)
+- [Endurance](docs/endurance.md)
+- [Compatibility log](docs/compatibility-log.md)
 
 ## Logging
-
-On start, logcat tag `VezelLauncher` prints API level, supported ABIs, package name, and heap memory.
 
 ```bat
 adb logcat -s VezelLauncher
 ```
 
-Record device results in [docs/compatibility-log.md](docs/compatibility-log.md).
+## Out of scope
 
-## Out of scope (this milestone)
-
-HOME intent filter, weather, MediaSession binding, GPS live speed, OEM package binding, Room, Flutter, MCU/camera.
+MCU flashing, removing factory apps, claiming licensed Honda car renders, reverse-camera takeover, custom radio DSP.

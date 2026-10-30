@@ -11,13 +11,51 @@ android {
         applicationId = "com.vezel.launcher"
         minSdk = 27
         targetSdk = 34
-        versionCode = 2
-        versionName = "0.2.0-sprint2"
+        versionCode = 6
+        versionName = "0.6.0-sprints3-6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         ndk {
             abiFilters += listOf("armeabi-v7a", "arm64-v8a")
+        }
+
+        // drawer flavor default; overridden by product flavors
+        buildConfigField("boolean", "HOME_CAPABLE", "false")
+    }
+
+    flavorDimensions += "home"
+    productFlavors {
+        create("drawer") {
+            dimension = "home"
+            isDefault = true
+            buildConfigField("boolean", "HOME_CAPABLE", "false")
+        }
+        create("homePilot") {
+            dimension = "home"
+            buildConfigField("boolean", "HOME_CAPABLE", "true")
+        }
+    }
+
+    signingConfigs {
+        // Release signing: copy keystore.properties.example → keystore.properties (gitignored).
+        // Without that file, release falls back to the debug keystore.
+        val keystorePropsFile = rootProject.file("keystore.properties")
+        if (keystorePropsFile.exists()) {
+            val props = mutableMapOf<String, String>()
+            keystorePropsFile.readLines()
+                .map { it.trim() }
+                .filter { it.isNotEmpty() && !it.startsWith("#") && it.contains("=") }
+                .forEach { line ->
+                    val idx = line.indexOf('=')
+                    props[line.substring(0, idx).trim()] = line.substring(idx + 1).trim()
+                }
+            create("release") {
+                storeFile = rootProject.file(props.getValue("storeFile"))
+                storePassword = props.getValue("storePassword")
+                keyAlias = props.getValue("keyAlias")
+                keyPassword = props.getValue("keyPassword")
+            }
         }
     }
 
@@ -28,6 +66,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // Prefer release keystore when present; otherwise debug signing (documented OK).
+            signingConfig = signingConfigs.findByName("release")
+                ?: signingConfigs.getByName("debug")
         }
     }
 
@@ -42,6 +83,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 

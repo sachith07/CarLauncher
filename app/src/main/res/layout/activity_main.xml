@@ -35,11 +35,29 @@
                 android:textStyle="bold" />
 
             <Button
+                android:id="@+id/btnRefreshApps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="@string/apps_refresh" />
+
+            <Button
                 android:id="@+id/btnBackDashboard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/back_dashboard" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/appsEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:gravity="center"
+            android:text="@string/apps_empty"
+            android:textColor="@color/vezel_text_muted"
+            android:textSize="16sp"
+            android:visibility="gone" />
 
         <GridView
             android:id="@+id/appsGrid"
