@@ -8,5 +8,14 @@
         <item name="android:navigationBarColor">@color/vezel_bg</item>
         <item name="android:windowBackground">@color/vezel_bg</item>
         <item name="android:textColorPrimary">@color/vezel_text</item>
+        <!-- Keep window transitions light for Mali-450 / endurance -->
+        <item name="android:windowAnimationStyle">@style/VezelWindowAnimation</item>
+    </style>
+
+    <style name="VezelWindowAnimation">
+        <item name="android:activityOpenEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:activityOpenExitAnimation">@android:anim/fade_out</item>
+        <item name="android:activityCloseEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:activityCloseExitAnimation">@android:anim/fade_out</item>
     </style>
 </resources>

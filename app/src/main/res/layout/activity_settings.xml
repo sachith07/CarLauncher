@@ -19,6 +19,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/homeNote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -73,6 +74,181 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:text="@string/oem_section_title"
+            android:textColor="@color/vezel_text"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="@string/oem_section_hint"
+            android:textColor="@color/vezel_text_muted"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/dock_radio"
+            android:textColor="@color/vezel_text"
+            android:textSize="14sp" />
+
+        <Spinner
+            android:id="@+id/spinnerRadio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/dock_maps"
+            android:textColor="@color/vezel_text"
+            android:textSize="14sp" />
+
+        <Spinner
+            android:id="@+id/spinnerMaps"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/dock_phone"
+            android:textColor="@color/vezel_text"
+            android:textSize="14sp" />
+
+        <Spinner
+            android:id="@+id/spinnerPhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/media_label"
+            android:textColor="@color/vezel_text"
+            android:textSize="14sp" />
+
+        <Spinner
+            android:id="@+id/spinnerMedia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp" />
+
+        <Button
+            android:id="@+id/btnNotificationAccess"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/media_notification_access" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/theme_label"
+            android:textColor="@color/vezel_text"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/themeValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/vezel_text_muted"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnThemeDark"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:text="@string/theme_dark" />
+
+            <Button
+                android:id="@+id/btnThemeDay"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:text="@string/theme_day" />
+
+            <Button
+                android:id="@+id/btnThemeAuto"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/theme_auto" />
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/checkReduceAnim"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:minHeight="48dp"
+            android:text="@string/reduce_animations"
+            android:textColor="@color/vezel_text" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/recovery_section_title"
+            android:textColor="@color/vezel_text"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="@string/recovery_section_hint"
+            android:textColor="@color/vezel_text_muted"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnHomeSettings"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:text="@string/open_home_settings" />
+
+            <Button
+                android:id="@+id/btnSystemSettings"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/open_system_settings" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
             android:text="@string/about_title"
             android:textColor="@color/vezel_text"
             android:textSize="20sp"
@@ -87,22 +263,6 @@
             android:text="@string/about_body"
             android:textColor="@color/vezel_text_muted"
             android:textSize="15sp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/theme_label"
-            android:textColor="@color/vezel_text"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/themeValue"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/vezel_text_muted"
-            android:textSize="14sp" />
 
         <Button
             android:id="@+id/btnBack"

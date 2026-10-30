@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat
 import com.vezel.launcher.R
 
 /**
- * Placeholder speed gauge. Displays "--" until LocationSpeedProvider is wired.
+ * Speed gauge. Displays "--" when GPS unavailable; "0" when speed is valid zero.
  */
 class SpeedGaugeView @JvmOverloads constructor(
     context: Context,
@@ -19,6 +19,7 @@ class SpeedGaugeView @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     private var speedText: String = context.getString(R.string.speed_placeholder)
+    private var statusText: String = context.getString(R.string.speed_unavailable)
 
     private val ringPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
@@ -39,13 +40,24 @@ class SpeedGaugeView @JvmOverloads constructor(
         textSize = 16f
     }
 
+    private val statusPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = ContextCompat.getColor(context, R.color.vezel_text_muted)
+        textAlign = Paint.Align.CENTER
+        textSize = 12f
+    }
+
     private val bounds = RectF()
 
+    /**
+     * @param speed km/h when a valid fix exists; null when GPS unavailable / stale.
+     */
     fun setSpeedKmh(speed: Float?) {
-        speedText = if (speed == null) {
-            context.getString(R.string.speed_placeholder)
+        if (speed == null) {
+            speedText = context.getString(R.string.speed_placeholder)
+            statusText = context.getString(R.string.speed_unavailable)
         } else {
-            speed.toInt().toString()
+            speedText = speed.toInt().toString()
+            statusText = context.getString(R.string.speed_unit)
         }
         invalidate()
     }
@@ -58,7 +70,7 @@ class SpeedGaugeView @JvmOverloads constructor(
 
         val cx = width / 2f
         val cy = height / 2f
-        canvas.drawText(speedText, cx, cy + 8f, textPaint)
-        canvas.drawText(context.getString(R.string.speed_unit), cx, cy + 36f, unitPaint)
+        canvas.drawText(speedText, cx, cy + 4f, textPaint)
+        canvas.drawText(statusText, cx, cy + 32f, if (speedText == "--") statusPaint else unitPaint)
     }
 }

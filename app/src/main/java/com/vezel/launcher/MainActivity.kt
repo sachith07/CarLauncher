@@ -1,6 +1,8 @@
 package com.vezel.launcher
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -13,6 +15,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.vezel.launcher.system.AppDiscovery
@@ -24,14 +27,15 @@ class MainActivity : AppCompatActivity(), DashboardView.Callbacks {
     private lateinit var dashboardView: DashboardView
     private lateinit var appsPanel: View
     private lateinit var appsGrid: GridView
+    private lateinit var appsEmpty: TextView
     private lateinit var discovery: AppDiscovery
 
-    private val clockTicker = object : Runnable {
-        override fun run() {
-            if (::dashboardView.isInitialized) {
-                dashboardView.refreshClock()
-                dashboardView.postDelayed(this, 30_000L)
-            }
+    private val locationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        dashboardView.onLocationPermissionResult(granted)
+        if (!granted) {
+            Toast.makeText(this, R.string.location_denied, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -43,26 +47,27 @@ class MainActivity : AppCompatActivity(), DashboardView.Callbacks {
         dashboardView = findViewById(R.id.dashboardView)
         appsPanel = findViewById(R.id.appsPanel)
         appsGrid = findViewById(R.id.appsGrid)
+        appsEmpty = findViewById(R.id.appsEmpty)
         dashboardView.callbacks = this
 
         findViewById<Button>(R.id.btnBackDashboard).setOnClickListener {
             showDashboard()
         }
+        findViewById<Button>(R.id.btnRefreshApps).setOnClickListener {
+            populateApps(forceRefresh = true)
+        }
 
         logRuntimeInfo()
+        maybeRequestLocation()
     }
 
     override fun onResume() {
         super.onResume()
-        dashboardView.refreshClock()
-        dashboardView.refreshVehicleSlot()
-        dashboardView.refreshSpeed()
-        dashboardView.removeCallbacks(clockTicker)
-        dashboardView.post(clockTicker)
+        dashboardView.bindLifecycle()
     }
 
     override fun onPause() {
-        dashboardView.removeCallbacks(clockTicker)
+        dashboardView.unbindLifecycle()
         super.onPause()
     }
 
@@ -71,21 +76,55 @@ class MainActivity : AppCompatActivity(), DashboardView.Callbacks {
     }
 
     override fun onOpenApps() {
-        val apps = discovery.discoverLauncherApps()
-        appsGrid.adapter = AppGridAdapter(apps)
-        appsGrid.setOnItemClickListener { _, _, position, _ ->
-            val app = apps[position]
-            if (!discovery.openLauncherApp(app)) {
-                Toast.makeText(this, R.string.open_failed, Toast.LENGTH_SHORT).show()
-            }
-        }
+        populateApps(forceRefresh = false)
         appsPanel.visibility = View.VISIBLE
         dashboardView.visibility = View.GONE
+    }
+
+    override fun onRequestLocationPermission() {
+        maybeRequestLocation(forcePrompt = true)
+    }
+
+    private fun populateApps(forceRefresh: Boolean) {
+        val apps = discovery.discoverLauncherApps(forceRefresh)
+        if (apps.isEmpty()) {
+            appsEmpty.visibility = View.VISIBLE
+            appsGrid.visibility = View.GONE
+        } else {
+            appsEmpty.visibility = View.GONE
+            appsGrid.visibility = View.VISIBLE
+            appsGrid.adapter = AppGridAdapter(apps)
+            appsGrid.setOnItemClickListener { _, _, position, _ ->
+                val app = apps[position]
+                if (!discovery.openLauncherApp(app)) {
+                    Toast.makeText(this, R.string.open_failed, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     private fun showDashboard() {
         appsPanel.visibility = View.GONE
         dashboardView.visibility = View.VISIBLE
+        dashboardView.refreshAll()
+    }
+
+    private fun maybeRequestLocation(forcePrompt: Boolean = false) {
+        val granted = ContextCompat.checkSelfPermission(
+            this, Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+        if (granted) {
+            dashboardView.onLocationPermissionResult(true)
+            return
+        }
+        if (forcePrompt || shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        } else if (forcePrompt) {
+            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        } else {
+            // First launch: request once so GPS speed / weather can work.
+            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
     }
 
     @Deprecated("Deprecated in Java")
@@ -107,7 +146,8 @@ class MainActivity : AppCompatActivity(), DashboardView.Callbacks {
         Log.i(
             TAG,
             "Vezel Drive start | api=${Build.VERSION.SDK_INT} abi=$abi " +
-                "package=$packageName memory(max/total/free MB)=$maxMb/$totalMb/$freeMb"
+                "package=$packageName memory(max/total/free MB)=$maxMb/$totalMb/$freeMb " +
+                "flavor=${BuildConfig.FLAVOR} homeCapable=${BuildConfig.HOME_CAPABLE}"
         )
     }
 
@@ -124,6 +164,7 @@ class MainActivity : AppCompatActivity(), DashboardView.Callbacks {
                 gravity = android.view.Gravity.CENTER_HORIZONTAL
                 setPadding(8, 12, 8, 12)
                 setBackgroundColor(ContextCompat.getColor(context, R.color.vezel_tile))
+                minimumHeight = (48 * resources.displayMetrics.density).toInt()
                 val icon = ImageView(context).apply {
                     id = ICON_ID
                     layoutParams = LinearLayout.LayoutParams(96, 96)

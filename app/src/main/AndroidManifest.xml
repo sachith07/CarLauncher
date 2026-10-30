@@ -1,28 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <queries>
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
         </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.DIAL" />
+        </intent>
         <package android:name="com.android.radio" />
         <package android:name="com.android.car.radio" />
         <package android:name="com.mediatek.radio" />
+        <package android:name="com.mx.radio" />
+        <package android:name="com.syu.radio" />
         <package android:name="com.google.android.apps.maps" />
         <package android:name="com.android.maps" />
+        <package android:name="com.baidu.BaiduMap" />
+        <package android:name="com.waze" />
         <package android:name="com.android.dialer" />
         <package android:name="com.google.android.dialer" />
         <package android:name="com.android.contacts" />
+        <package android:name="com.google.android.apps.youtube.music" />
+        <package android:name="com.spotify.music" />
+        <package android:name="com.android.music" />
     </queries>
 
     <application
+        android:name=".VezelApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@drawable/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/Theme.VezelDriveLauncher">
+        android:theme="@style/Theme.VezelDriveLauncher"
+        android:usesCleartextTraffic="false">
 
         <activity
             android:name=".ui.SettingsActivity"
@@ -34,11 +54,22 @@
             android:name=".MainActivity"
             android:exported="true"
             android:screenOrientation="landscape"
+            android:launchMode="singleTask"
             android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".service.MediaNotificationListener"
+            android:exported="true"
+            android:label="@string/notification_listener_label"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
     </application>
 </manifest>

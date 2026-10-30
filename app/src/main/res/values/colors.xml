@@ -11,4 +11,11 @@
     <color name="vezel_vehicle_slot">#2A3A52</color>
     <color name="vezel_gauge_ring">#3D8BFF</color>
     <color name="ic_launcher_bg">#0B1220</color>
+
+    <!-- Day theme surfaces (FR-11) -->
+    <color name="vezel_day_bg">#E8EEF4</color>
+    <color name="vezel_day_header">#D5DEE8</color>
+    <color name="vezel_day_dock">#CDD6E2</color>
+    <color name="vezel_day_text">#122033</color>
+    <color name="vezel_day_muted">#4A5B70</color>
 </resources>

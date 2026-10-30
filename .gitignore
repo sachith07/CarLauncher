@@ -21,4 +21,6 @@ app/build/
 *.hprof
 *.keystore
 !debug.keystore
+*.jks
+keystore.properties
 .kotlin/
