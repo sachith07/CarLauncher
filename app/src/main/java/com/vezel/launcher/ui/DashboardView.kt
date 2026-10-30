@@ -2,18 +2,20 @@ package com.vezel.launcher.ui
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.util.AttributeSet
 import android.view.Gravity
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.vezel.launcher.R
 import com.vezel.launcher.data.LauncherPreferences
-import com.vezel.launcher.data.VehicleAssetRepository
 import com.vezel.launcher.system.AppDiscovery
 import com.vezel.launcher.system.LocationSpeedProvider
+import com.vezel.launcher.vehicle.VehicleAssetRepository
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -35,15 +37,18 @@ class DashboardView @JvmOverloads constructor(
     var callbacks: Callbacks? = null
 
     private val preferences = LauncherPreferences(context)
-    private val assets = VehicleAssetRepository(preferences)
+    private val assets = VehicleAssetRepository(context)
     private val discovery = AppDiscovery(context)
     private val speedProvider = LocationSpeedProvider()
 
     private val brandView: TextView
     private val clockView: TextView
     private val vehicleStage: FrameLayout
+    private val vehicleImage: ImageView
     private val speedGauge: SpeedGaugeView
     private val shortcutRow: LinearLayout
+
+    private var displayedColorKey: String? = null
 
     init {
         orientation = VERTICAL
@@ -51,7 +56,6 @@ class DashboardView @JvmOverloads constructor(
         val pad = dp(16)
         setPadding(pad, pad, pad, pad)
 
-        // Header
         val header = LinearLayout(context).apply {
             orientation = HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
@@ -80,7 +84,6 @@ class DashboardView @JvmOverloads constructor(
         header.addView(settingsBtn)
         addView(header, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
 
-        // Stage row: vehicle + gauge
         val stageRow = LinearLayout(context).apply {
             orientation = HORIZONTAL
             layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, 0, 1f).also {
@@ -88,20 +91,22 @@ class DashboardView @JvmOverloads constructor(
             }
         }
 
+        vehicleImage = ImageView(context).apply {
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            adjustViewBounds = true
+            contentDescription = context.getString(R.string.vehicle_stage)
+            // Keep stage dark so decode latency never flashes white.
+            setBackgroundColor(ContextCompat.getColor(context, R.color.vezel_vehicle_slot))
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        }
+
         vehicleStage = FrameLayout(context).apply {
-            setBackgroundColor(assets.currentColorSlot())
+            setBackgroundColor(ContextCompat.getColor(context, R.color.vezel_vehicle_slot))
             layoutParams = LayoutParams(0, LayoutParams.MATCH_PARENT, 1.4f)
-            val label = TextView(context).apply {
-                text = context.getString(R.string.vehicle_stage)
-                setTextColor(ContextCompat.getColor(context, R.color.vezel_text_muted))
-                textSize = 16f
-                gravity = Gravity.CENTER
-                layoutParams = FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.MATCH_PARENT,
-                    FrameLayout.LayoutParams.MATCH_PARENT
-                )
-            }
-            addView(label)
+            addView(vehicleImage)
         }
 
         speedGauge = SpeedGaugeView(context).apply {
@@ -115,7 +120,6 @@ class DashboardView @JvmOverloads constructor(
         stageRow.addView(speedGauge)
         addView(stageRow)
 
-        // Shortcut tiles
         shortcutRow = LinearLayout(context).apply {
             orientation = HORIZONTAL
             layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).also {
@@ -152,7 +156,6 @@ class DashboardView @JvmOverloads constructor(
         }
         addView(shortcutRow)
 
-        // Bottom dock
         val dock = LinearLayout(context).apply {
             orientation = HORIZONTAL
             gravity = Gravity.CENTER
@@ -188,7 +191,9 @@ class DashboardView @JvmOverloads constructor(
         })
         addView(dock)
 
+        assets.preloadAll()
         refreshClock()
+        refreshVehicleSlot()
     }
 
     fun refreshClock() {
@@ -196,12 +201,33 @@ class DashboardView @JvmOverloads constructor(
         clockView.text = fmt.format(Date())
     }
 
+    /**
+     * Applies the persisted paint. Keeps the previous bitmap until the new one is ready.
+     */
     fun refreshVehicleSlot() {
-        vehicleStage.setBackgroundColor(assets.currentColorSlot())
+        val key = preferences.vehicleColorKey
+        val cached = assets.getCached(key)
+        if (cached != null && !cached.isRecycled) {
+            applyBitmap(key, cached)
+        }
+        assets.loadAsync(key) { paint, bitmap ->
+            applyBitmap(paint.key, bitmap)
+        }
+    }
+
+    private fun applyBitmap(key: String, bitmap: Bitmap) {
+        if (bitmap.isRecycled) return
+        vehicleImage.setImageBitmap(bitmap)
+        displayedColorKey = key
     }
 
     fun refreshSpeed() {
         speedGauge.setSpeedKmh(speedProvider.currentSpeedKmh())
+    }
+
+    override fun onDetachedFromWindow() {
+        assets.shutdown()
+        super.onDetachedFromWindow()
     }
 
     private fun dp(value: Int): Int =

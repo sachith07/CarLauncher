@@ -11,8 +11,8 @@ android {
         applicationId = "com.vezel.launcher"
         minSdk = 27
         targetSdk = 34
-        versionCode = 1
-        versionName = "0.1.0-sprint1"
+        versionCode = 2
+        versionName = "0.2.0-sprint2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
