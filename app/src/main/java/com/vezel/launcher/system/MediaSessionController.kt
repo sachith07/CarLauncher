@@ -3,6 +3,7 @@ package com.vezel.launcher.system
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
@@ -28,7 +29,10 @@ class MediaSessionController(
         val artist: String? = null,
         val isPlaying: Boolean = false,
         val packageName: String? = null,
-        val available: Boolean = false
+        val available: Boolean = false,
+        val positionMs: Long = 0L,
+        val durationMs: Long = 0L,
+        val art: Bitmap? = null
     )
 
     private val prefs = LauncherPreferences(context)
@@ -48,6 +52,16 @@ class MediaSessionController(
 
         override fun onPlaybackStateChanged(state: PlaybackState?) {
             publishFrom(activeController)
+        }
+    }
+
+    private val progressTicker = object : Runnable {
+        override fun run() {
+            if (!connected) return
+            if (lastPublished.isPlaying) {
+                publishFrom(activeController)
+            }
+            mainHandler.postDelayed(this, 1000L)
         }
     }
 
@@ -74,6 +88,8 @@ class MediaSessionController(
             return
         }
         connected = true
+        mainHandler.removeCallbacks(progressTicker)
+        mainHandler.post(progressTicker)
         if (!isNotificationAccessEnabled()) {
             publish(NowPlaying(available = false))
             return
@@ -98,6 +114,7 @@ class MediaSessionController(
 
     fun disconnect() {
         connected = false
+        mainHandler.removeCallbacks(progressTicker)
         try {
             activeController?.unregisterCallback(controllerCallback)
         } catch (_: Exception) {
@@ -121,6 +138,19 @@ class MediaSessionController(
         } catch (_: Exception) {
             publish(NowPlaying(available = false))
         }
+    }
+
+    fun togglePlayPause() {
+        val controls = activeController?.transportControls ?: return
+        if (lastPublished.isPlaying) controls.pause() else controls.play()
+    }
+
+    fun skipToNext() {
+        activeController?.transportControls?.skipToNext()
+    }
+
+    fun skipToPrevious() {
+        activeController?.transportControls?.skipToPrevious()
     }
 
     /** Opens the preferred media package, or a common music player fallback. */
@@ -184,13 +214,21 @@ class MediaSessionController(
             ?: meta?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
         val playing = state?.state == PlaybackState.STATE_PLAYING ||
             state?.state == PlaybackState.STATE_BUFFERING
+        val duration = meta?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: 0L
+        val position = state?.position?.coerceAtLeast(0L) ?: 0L
+        val art = meta?.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
+            ?: meta?.getBitmap(MediaMetadata.METADATA_KEY_ART)
+            ?: meta?.getBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON)
         publish(
             NowPlaying(
                 title = title,
                 artist = artist,
                 isPlaying = playing,
                 packageName = controller.packageName,
-                available = !title.isNullOrBlank() || playing
+                available = !title.isNullOrBlank() || playing,
+                positionMs = position,
+                durationMs = duration,
+                art = art
             )
         )
     }

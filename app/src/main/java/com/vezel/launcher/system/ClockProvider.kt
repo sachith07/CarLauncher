@@ -5,20 +5,31 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
+import com.vezel.launcher.R
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
 /**
  * Locale-aware clock/date that refreshes on TIME_TICK, timezone, and date changes.
+ * Exposes 12-hour time + AM/PM, greeting, and a long date for the mockup header.
  */
 class ClockProvider(
     private val context: Context,
-    private val onTick: (time: String, date: String) -> Unit
+    private val onTick: (ClockUi) -> Unit
 ) {
 
-    private val timeFmt = SimpleDateFormat("HH:mm", Locale.getDefault())
-    private val dateFmt = SimpleDateFormat("EEE d MMM", Locale.getDefault())
+    data class ClockUi(
+        val time12: String,
+        val amPm: String,
+        val dateLong: String,
+        val greeting: String,
+        val hour24: Int
+    )
+
+    private val timeFmt = SimpleDateFormat("h:mm", Locale.getDefault())
+    private val dateFmt = SimpleDateFormat("EEEE, d MMMM", Locale.getDefault())
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(ctx: Context?, intent: Intent?) {
@@ -58,6 +69,32 @@ class ClockProvider(
 
     fun publish() {
         val now = Date()
-        onTick(timeFmt.format(now), dateFmt.format(now))
+        val cal = Calendar.getInstance().apply { time = now }
+        val hour = cal.get(Calendar.HOUR_OF_DAY)
+        val amPm = if (cal.get(Calendar.AM_PM) == Calendar.AM) {
+            context.getString(R.string.clock_am)
+        } else {
+            context.getString(R.string.clock_pm)
+        }
+        onTick(
+            ClockUi(
+                time12 = timeFmt.format(now),
+                amPm = amPm,
+                dateLong = dateFmt.format(now),
+                greeting = greetingFor(hour),
+                hour24 = hour
+            )
+        )
     }
+
+    private fun greetingFor(hour: Int): String = when (hour) {
+        in 5..11 -> context.getString(R.string.greeting_morning)
+        in 12..16 -> context.getString(R.string.greeting_afternoon)
+        in 17..20 -> context.getString(R.string.greeting_evening)
+        else -> context.getString(R.string.greeting_night)
+    }
+
+    /** True when auto theme should prefer night (dark) surfaces. */
+    fun isNightHour(hour24: Int = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)): Boolean =
+        hour24 < 6 || hour24 >= 18
 }
