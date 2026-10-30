@@ -15,10 +15,13 @@
     <string name="apps_title">Apps</string>
     <string name="back_dashboard">Dashboard</string>
     <string name="about_title">About</string>
-    <string name="about_body">Vezel Drive Launcher Sprint 0–1 scaffold.\nPackage: com.vezel.launcher\nThis app is NOT registered as the default HOME/launcher. Uninstall to roll back.</string>
+    <string name="about_body">Vezel Drive Launcher Sprint 2 — vehicle personalization.\nPackage: com.vezel.launcher\nSix paint placeholders persist via SharedPreferences.\nThis app is NOT registered as the default HOME/launcher. Uninstall to roll back.</string>
     <string name="not_default_home_note">Not the default home screen. Launch from the app drawer only.</string>
     <string name="no_app_found">No matching app installed</string>
     <string name="open_failed">Could not open app</string>
     <string name="theme_label">Theme (stub)</string>
-    <string name="color_label">Vehicle color (stub)</string>
+    <string name="color_label">Vehicle color</string>
+    <string name="paint_section_title">Vehicle paint</string>
+    <string name="paint_section_hint">Choose a body color. Selection is saved and restored after restart.</string>
+    <string name="color_selected_fmt">%1$s (%2$s)</string>
 </resources>

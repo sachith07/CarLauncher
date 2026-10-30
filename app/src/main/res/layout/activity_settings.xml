@@ -30,6 +30,49 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:text="@string/paint_section_title"
+            android:textColor="@color/vezel_text"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="@string/paint_section_hint"
+            android:textColor="@color/vezel_text_muted"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/paintPreview"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:layout_marginTop="12dp"
+            android:adjustViewBounds="true"
+            android:background="@color/vezel_vehicle_slot"
+            android:contentDescription="@string/vehicle_stage"
+            android:scaleType="fitCenter" />
+
+        <TextView
+            android:id="@+id/colorValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/vezel_text_muted"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:id="@+id/swatchRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
             android:text="@string/about_title"
             android:textColor="@color/vezel_text"
             android:textSize="20sp"
@@ -44,22 +87,6 @@
             android:text="@string/about_body"
             android:textColor="@color/vezel_text_muted"
             android:textSize="15sp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@string/color_label"
-            android:textColor="@color/vezel_text"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/colorValue"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/vezel_text_muted"
-            android:textSize="14sp" />
 
         <TextView
             android:layout_width="match_parent"

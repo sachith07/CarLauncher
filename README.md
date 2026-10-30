@@ -2,7 +2,7 @@
 
 Native Kotlin + Android Views launcher APK for Honda Vezel / AC8227L-class head units.
 
-**Sprint 0–1:** buildable dashboard scaffold. This app is **not** registered as the default HOME screen.
+**Sprint 2:** vehicle personalization — six paint WebP placeholders, SharedPreferences persistence, responsive dashboard stage. This app is **not** registered as the default HOME screen.
 
 | | |
 |---|---|
@@ -27,6 +27,12 @@ macOS / Linux:
 
 Debug APK: `app/build/outputs/apk/debug/app-debug.apk`
 
+Regenerate paint placeholders (optional):
+
+```bat
+python tools\generate_vezel_paint_placeholders.py
+```
+
 ## USB install
 
 ```bat
@@ -34,6 +40,10 @@ adb install -r app\build\outputs\apk\debug\app-debug.apk
 ```
 
 Launch from the **app drawer**. Do not set as default home this milestone.
+
+## Vehicle paint
+
+Settings → six swatches. Choice is stored in SharedPreferences and restored on the dashboard after restart. Asset notes: [docs/vehicle-assets.md](docs/vehicle-assets.md).
 
 ## Rollback
 
@@ -57,4 +67,4 @@ Record device results in [docs/compatibility-log.md](docs/compatibility-log.md).
 
 ## Out of scope (this milestone)
 
-HOME intent filter, weather, MediaSession binding, GPS speed, WebP vehicle assets, Room, Flutter, MCU/camera.
+HOME intent filter, weather, MediaSession binding, GPS live speed, OEM package binding, Room, Flutter, MCU/camera.
